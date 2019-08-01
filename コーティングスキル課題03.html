@@ -1,0 +1,92 @@
+<html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+</head>
+<body>
+<table id="banmen" border="2" width="800" height = "800">
+<script>
+
+//var n = 0;
+
+//盤面作成
+for(var i = 0 ; i < 8 ; i++) {
+   document.write("<tr  width = 80 height = 80 align = center>");
+   for(var j = 0 ; j < 8 ; j++) {
+     document.write("<td  width = 80 height = 80 align = center>" ,  "</td>");
+   }
+   document.write("</tr>");
+}
+   var qCount = 0;
+   var ban = document.getElementById('banmen');//テーブル取得
+
+//盤面座標取得
+   $("#banmen td").bind('click', function(){
+    $tag_td = $(this)[0];
+    $tag_tr = $(this).parent()[0];
+  });
+
+//クリックイベント
+for (var x=0; x<8;x++){
+  for(var y = 0; y < 8; y++){
+    var oseta = ban.rows[x].cells[y];
+    oseta.onclick = function(){
+      Oseta(this);
+    }
+  }
+}
+
+function Oseta(Queen){
+
+  if(qCount < 8 && Queen.style.backgroundColor != 'red'){
+    qCount++;
+    Queen.innerHTML ="Q";
+    Queen.style.backgroundColor = 'red'; 
+    Queen.style.fontSize = "64px"
+
+
+  //たて・よこ
+  for(var i = 0; i < 8; i++){
+  ban.rows[i].cells[$tag_td.cellIndex].style.backgroundColor = 'red';
+  ban.rows[$tag_tr.rowIndex].cells[i].style.backgroundColor = 'red';
+  } 
+  
+  //斜め
+  for(var i = 0; i  < 8 ; i++){
+    ban.rows[$tag_tr.rowIndex + i].cells[$tag_td.cellIndex + i].style.backgroundColor = 'red';
+    if($tag_tr.rowIndex + i  ==  7 || $tag_td.cellIndex + i == 7){
+      break;
+   }  
+}
+
+ for(var i = 0; i  < 8 ; i++){
+  ban.rows[$tag_tr.rowIndex - i].cells[$tag_td.cellIndex - i].style.backgroundColor = 'red';
+    if($tag_tr.rowIndex - i  ==  0 || $tag_td.cellIndex - i == 0){
+      break;
+   }  
+}
+
+for(var i = 0; i < 8; i++){
+    ban.rows[$tag_tr.rowIndex + i].cells[$tag_td.cellIndex - i].style.backgroundColor = 'red';
+    if($tag_tr.rowIndex + i  ==  7 || $tag_td.cellIndex - i == 0){
+      break;
+    }
+}
+
+for(var i = 0; i < 8; i++){
+    ban.rows[$tag_tr.rowIndex - i].cells[$tag_td.cellIndex + i].style.backgroundColor = 'red';
+    if($tag_tr.rowIndex - i  ==  0 || $tag_td.cellIndex + i == 7){
+      break;
+    }
+}
+//
+if (qCount == 8){
+    qCount++;
+    alert("クリア！！！");
+    }
+  }
+}
+</script>
+</body>
+</html>
