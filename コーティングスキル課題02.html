@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>カード判定アルゴリズム</title>
+</head>
+<body>
+<script>
+var numbers = { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0, 13:0, 14:0 };//数字判定
+var suits = { 0:0, 1:0, 2:0, 3:0 };//絵柄判定
+var sameCount = { 0:0, 1:0, 2:0, 3:0, 4:0 };//同カードが何枚あるか
+var pair_answer;//最後の役を表示する関数
+var card_set = new Array(5);
+for (var y=0; y<card_set.length; y++){
+  card_set[y] = new Array(2);
+}
+
+function setup(){
+  for(var i = 0;i < 5; i++){
+    input = window.prompt((i+1)+"枚目のカードを入力してください 絵柄は0から3の数字です　例)スペードの3→0 03");
+    var change_set = input.split(' ');//スペースを　, に変換
+    var num = Number(change_set[1]);//数字頭の0を削除
+    card_set[i][0]=change_set[0];//絵柄を格納
+    card_set[i][1]=num;//数字を格納
+    //絵柄セット
+    suits[card_set[i][0]]++;
+    //数字セット
+    numbers[card_set[i][1]]++;
+    }
+    if(RoyalFlush()){
+      pair_answer = ("ロイヤルストレートフラッシュ");
+    }else if(StraightFlush()){
+      pair_answer = ("ストレートフラッシュ");
+    }else if(SameNumber(4)){
+	     pair_answer = ("フォーカード");
+    }else if(FullHouse()){
+      pair_answer = ("フルハウス");
+    }else if(Flush()){
+      pair_answer = ("フラッシュ");
+    }else if(Straight()){
+      pair_answer = ("ストレート");
+    }else if(SameNumber(3)){
+	     pair_answer = ("スリーカード");
+    }else if(TwoPairs()){
+      pair_answer = ("ツーペア");
+    }else if(SameNumber(2)){
+       pair_answer = ("ワンペア");
+    }else{
+      pair_answer = ("ハイカード");
+    }
+    card_notation();
+}
+
+//フラッシュ
+  function Flush(){
+  	//5枚同じマークがあったらtrue
+  	for( var answer in suits ){
+  		if( suits[answer]>=5 ){
+        return true;
+      }
+    }
+  }
+
+//カード重複
+function SameNumber( sameCount ){ //sameCountで何枚以上ならtrueを返す
+	//sameCount枚以上同じ数字があったらtrue
+	for( var i=1; i<=13; i++ ){
+		if( numbers[i]>=sameCount ){
+      return true;
+	  }
+  }
+}
+
+//ツーペア
+function TwoPairs(){
+	//カウントした数字を集計
+	for( var i=1; i<=13; i++ ){
+		sameCount[numbers[i]]++;
+	}
+	//「同じ数字が2枚」が2つ以上あったらツーペア
+	if( sameCount[2]>=2 ){
+		return true;
+	}
+}
+
+//フルハウス
+function FullHouse(){
+	//カウントした数字を集計
+	for( var i=1; i<=13; i++ ){
+		sameCount[numbers[i]]++;
+	}
+	//同じ数字が3枚が1組以上と、同じ数字が2枚が1組以上あったらフルハウス
+	if( sameCount[3]>=1 && sameCount[2]>=1 ){
+		return true;
+	}
+}
+
+//ストレート
+function Straight(){
+	//1から始まるストレート～9から始まるストレートを判定する
+	for( var i=1; i<=9; i++ ){
+		if( numbers[i]>=1 && numbers[i+1]>=1 && numbers[i+2]>=1 && numbers[i+3]>=1 && numbers[i+4]>=1 ){
+			return true;
+		}
+	}
+	//10から始まるストレートのみ1（エース）が含まれるため別で判定
+	if( numbers[10]>=1 && numbers[11]>=1 && numbers[12]>=1 && numbers[13]>=1 && numbers[1]>=1 ){
+			return true;
+	}
+	return false;
+}
+
+//ストレートフラッシュ
+function StraightFlush(){
+	//ストレートかつフラッシュが成立していたらストレートフラッシュ
+	if( Straight() && Flush()){
+		return true;
+	}
+	return false;
+}
+
+//ロイヤルストレートフラッシュ
+function RoyalFlush(){
+  for( var answer in suits ){
+    if( suits[answer]>=5 ){
+      if( numbers[10]>=1 && numbers[11]>=1 && numbers[12]>=1 && numbers[13]>=1 && numbers[1]>=1 ){
+          return true;
+      }
+    }
+  }
+}
+
+//カード表記
+function card_notation(){
+  for(var i=0;i<5;i++){
+    var symbol = card_set[i][0];
+    if(symbol == 0){
+      card_set[i][0] = "S";
+    }else if(symbol ==1){
+      card_set[i][0] = "C"
+    }else if (symbol ==2) {
+      card_set[i][0] = "D"
+    }else {
+      card_set[i][0] = "H"
+    }
+    if(card_set[i][1]==1){
+      card_set[i][1]="A"
+    }else if(card_set[i][1]==11){
+      card_set[i][1]="J"
+    }else if(card_set[i][1]==12){
+      card_set[i][1]="Q"
+    }else if(card_set[i][1]==13){
+      card_set[i][1]="K"
+    }
+      document.getElementById("enemy_hitlog").insertAdjacentHTML('beforeend', card_set[i][0] + card_set[i][1]+" ");
+  }
+  document.getElementById("pair_answer").innerHTML = pair_answer;
+}
+
+</script>
+<body onload="setup();">
+<p id="enemy_hitlog"></p>
+<p id="pair_answer"></p>
+</body>
+</html>
